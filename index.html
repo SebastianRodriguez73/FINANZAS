@@ -451,14 +451,21 @@ function occsRange(ymA, ymB){
   return out;
 }
 
-/* ------------------------------- saldos -------------------------------- */
+/* ------------------------------- saldos --------------------------------
+   El saldo de partida es el dinero disponible AL INICIO de config.fechaSaldo.
+   Por lo tanto cuenta todo movimiento con esa fecha o posterior: un cargo
+   registrado hoy se descuenta hoy mismo, no al día siguiente.
+   ---------------------------------------------------------------------- */
+// ¿Este movimiento ya está fuera del saldo de partida?
+const cuenta = o => o.fecha >= db.config.fechaSaldo;
+
 // Saldo al cierre de la fecha indicada.
 function saldoAl(fechaISO){
   const base = db.config.fechaSaldo;
   let s = db.config.saldoInicial || 0;
-  if(fechaISO <= base) return s;
+  if(fechaISO < base) return s;
   occsRange(ymOf(base), ymOf(fechaISO)).forEach(o=>{
-    if(o.fecha > base && o.fecha <= fechaISO) s += (o.tipo==='ingreso' ? o.monto : -o.monto);
+    if(cuenta(o) && o.fecha <= fechaISO) s += (o.tipo==='ingreso' ? o.monto : -o.monto);
   });
   return s;
 }
@@ -466,7 +473,7 @@ function saldoAl(fechaISO){
 function serieSaldo(desdeISO, hastaISO){
   const pts = [];
   let s = saldoAl(addDaysIso(desdeISO,-1));
-  const occ = occsRange(ymOf(desdeISO), ymOf(hastaISO));
+  const occ = occsRange(ymOf(desdeISO), ymOf(hastaISO)).filter(cuenta);
   const n = daysBetween(desdeISO, hastaISO);
   for(let i=0; i<=n; i++){
     const f = addDaysIso(desdeISO, i);
@@ -889,12 +896,13 @@ function viewConfig(){
   const nMov = db.movimientos.length, nOcc = occsCached(ui.ym).length;
   let h = '';
   h += '<div class="sec"><div class="sec-h"><h2>Punto de partida</h2></div><div class="card pad">'+
-    '<div class="field"><label>Saldo que tengo hoy en cuentas + efectivo</label>'+
+    '<div class="field"><label>Saldo de partida (cuentas + efectivo)</label>'+
     '<input id="cfgSaldo" inputmode="numeric" value="'+NF.format(db.config.saldoInicial||0)+'">'+
-    '<div class="hint">Desde aquí parte todo el cálculo. Es la foto real de tu dinero a la fecha indicada abajo.</div></div>'+
-    '<div class="field"><label>Fecha de esa foto</label>'+
+    '<div class="hint">Es el dinero que tenías <b>al comenzar</b> la fecha indicada abajo. Desde ahí parte todo el cálculo.</div></div>'+
+    '<div class="field"><label>Fecha de partida</label>'+
     '<input id="cfgFecha" type="date" value="'+db.config.fechaSaldo+'">'+
-    '<div class="hint">Los movimientos anteriores a esta fecha no se suman (ya están dentro del saldo).</div></div>'+
+    '<div class="hint">Todo movimiento con <b>esta fecha o posterior</b> se aplica al saldo, incluido el mismo día. '+
+    'Lo anterior a esta fecha se ignora, porque ya está dentro del saldo de partida.</div></div>'+
     '<button class="btn pri block" data-act="saveCfg">Guardar</button></div></div>';
 
   h += '<div class="sec"><div class="sec-h"><h2>Respaldo de datos</h2></div><div class="card pad">'+
@@ -1242,7 +1250,7 @@ async function download(name, content, mime, okMsg){
 }
 function csvOf(ymA, ymB){
   const rows = [['Fecha','Tipo','Descripcion','Categoria','Origen','Estado','Ingreso','Gasto','Saldo acumulado']];
-  const occ = occsRange(ymA, ymB).slice().sort((a,b)=>a.fecha.localeCompare(b.fecha));
+  const occ = occsRange(ymA, ymB).filter(cuenta).sort((a,b)=>a.fecha.localeCompare(b.fecha));
   let s = saldoAl(addDaysIso(ymA+'-01',-1));
   occ.forEach(o=>{
     s += (o.tipo==='ingreso'? o.monto : -o.monto);
@@ -1345,10 +1353,13 @@ if(!db.config.saldoInicial && !db.movimientos.length && !db.fijos.length){
       '<b>Cómo funciona esta app:</b><br>'+
       '· El <b>saldo disponible hoy</b> descuenta solo lo que ya venció.<br>'+
       '· Un gasto con fecha 15 aparece en la lista, pero <b>no toca tu saldo hasta el 15</b>.<br>'+
+      '· Un gasto que registres <b>con fecha de hoy se descuenta de inmediato</b>.<br>'+
       '· Los <b>fijos, créditos y tarjetas</b> se registran una vez y se repiten solos.'+
       '</div>'+
-      '<div class="field"><label>¿Cuánto dinero tienes hoy? (cuentas + efectivo)</label>'+
-      '<input id="wSaldo" inputmode="numeric" placeholder="0"></div>',
+      '<div class="field"><label>¿Cuánto dinero tienes disponible ahora? (cuentas + efectivo)</label>'+
+      '<input id="wSaldo" inputmode="numeric" placeholder="0">'+
+      '<div class="hint">Registra desde aquí en adelante. Si un gasto de hoy ya está descontado '+
+      'en el saldo que anotaste, no lo vuelvas a ingresar.</div></div>',
       '<div class="modal-f"><button class="btn pri" id="wOk">Empezar</button></div>');
     $('#wOk').onclick = ()=>{
       db.config.saldoInicial = parseMoney($('#wSaldo').value);
