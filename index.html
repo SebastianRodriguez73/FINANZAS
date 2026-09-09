@@ -73,8 +73,18 @@ a{color:var(--accent)}
 .monthpick button:hover{background:var(--border);color:var(--text)}
 .monthpick .label{font-size:13px;font-weight:600;min-width:104px;text-align:center;text-transform:capitalize}
 
-main{max-width:1080px;margin:0 auto;padding:16px 14px 96px}
-@media(min-width:820px){ main{padding:22px 22px 40px} }
+main{max-width:1080px;margin:0 auto;padding:16px 14px 4px}
+@media(min-width:820px){ main{padding:22px 22px 4px} }
+
+/* ---------- firma ---------- */
+.firma{
+  display:flex;align-items:center;justify-content:center;gap:11px;
+  max-width:1080px;margin:14px auto calc(env(safe-area-inset-bottom) + 80px);
+  font-size:10.5px;font-weight:700;letter-spacing:.3em;color:var(--faint);
+  user-select:none;
+}
+.firma .ln{height:1px;width:30px;background:var(--border);flex:none}
+@media(min-width:820px){ .firma{margin-bottom:30px} }
 
 /* ---------- nav ---------- */
 nav.tabs{
@@ -245,6 +255,8 @@ table.tbl tr:last-child td{border-bottom:0}
 
 <main id="view"></main>
 
+<div class="firma"><span class="ln"></span>BY SR<span class="ln"></span></div>
+
 <button class="fab" id="fab" title="Agregar movimiento">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14" stroke-linecap="round"/></svg>
 </button>
@@ -260,6 +272,7 @@ table.tbl tr:last-child td{border-bottom:0}
    ========================================================================= */
 
 /* ------------------------------- estado -------------------------------- */
+const APP_VERSION = '1.4';
 const KEY = 'misfinanzas.v1';
 
 const CATS_DEF = [
@@ -919,6 +932,7 @@ function viewConfig(){
     '<div class="pad"><button class="btn sm block" data-act="addCat">'+svg(ICON.plus)+'Nueva categoría</button></div></div></div>';
 
   h += '<div class="sec"><div class="sec-h"><h2>Estado</h2></div><div class="card pad">'+
+    '<div class="kv"><span>Versión de la app</span><b>'+APP_VERSION+' · BY SR</b></div>'+
     '<div class="kv"><span>Movimientos sueltos guardados</span><b>'+nMov+'</b></div>'+
     '<div class="kv"><span>Gastos fijos</span><b>'+db.fijos.length+'</b></div>'+
     '<div class="kv"><span>Créditos</span><b>'+db.creditos.length+'</b></div>'+
@@ -938,7 +952,17 @@ function openModal(title, bodyHtml, footerHtml){
     '<div class="modal-h"><h3>'+esc(title)+'</h3><button class="x" id="mx">✕</button></div>'+
     bodyHtml + (footerHtml||'') + '</div></div>';
   $('#mx').onclick = closeModal;
-  $('#ovl').onclick = e=>{ if(e.target.id==='ovl') closeModal(); };
+
+  // Cerrar al tocar fuera, pero SOLO si el gesto empezó y terminó en el fondo.
+  // Si empezaste dentro (por ejemplo seleccionando texto de un campo) y soltaste
+  // el mouse fuera, la ventana NO se cierra y no pierdes lo que escribiste.
+  const ovl = $('#ovl');
+  let desdeElFondo = false;
+  ovl.addEventListener('pointerdown', e=>{ desdeElFondo = (e.target === ovl); });
+  ovl.addEventListener('click', e=>{
+    if(desdeElFondo && e.target === ovl) closeModal();
+    desdeElFondo = false;
+  });
   $('#modalRoot').querySelectorAll('input[inputmode=numeric]').forEach(inp=>{
     inp.addEventListener('input', ()=>{
       const p = inp.selectionStart, len = inp.value.length;
@@ -1369,9 +1393,22 @@ if(!db.config.saldoInicial && !db.movimientos.length && !db.fijos.length){
   }, 350);
 }
 
+// Registro del service worker + actualizacion automatica.
 if('serviceWorker' in navigator){
+  var yaRecargo = false;
+  navigator.serviceWorker.addEventListener('controllerchange', function(){
+    if(yaRecargo) return; yaRecargo = true; location.reload();
+  });
   window.addEventListener('load', function(){
-    navigator.serviceWorker.register('sw.js').catch(function(){});
+    navigator.serviceWorker.register('sw.js').then(function(reg){
+      reg.update();
+      setInterval(function(){ reg.update(); }, 30*60*1000);
+    }).catch(function(){});
+  });
+  document.addEventListener('visibilitychange', function(){
+    if(!document.hidden && navigator.serviceWorker.getRegistration){
+      navigator.serviceWorker.getRegistration().then(function(r){ if(r) r.update(); }).catch(function(){});
+    }
   });
 }
 </script>
