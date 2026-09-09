@@ -18,6 +18,7 @@
   --brand:#0f172a; --on-brand:#f8fafc; --accent:#2563eb;
   --pos:#059669; --pos-bg:#ecfdf5; --neg:#dc2626; --neg-bg:#fef2f2;
   --warn:#b45309; --warn-bg:#fffbeb;
+  --save:#0d9488; --save-bg:#f0fdfa;
   --shadow:0 1px 2px rgba(15,23,42,.06),0 4px 16px rgba(15,23,42,.06);
   --r:14px;
 }
@@ -28,6 +29,7 @@
     --brand:#e8edf7; --on-brand:#0b1120; --accent:#60a5fa;
     --pos:#34d399; --pos-bg:#062a22; --neg:#f87171; --neg-bg:#2e1414;
     --warn:#fbbf24; --warn-bg:#2c2109;
+    --save:#2dd4bf; --save-bg:#08211f;
     --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.28);
   }
 }
@@ -37,6 +39,7 @@
   --brand:#e8edf7; --on-brand:#0b1120; --accent:#60a5fa;
   --pos:#34d399; --pos-bg:#062a22; --neg:#f87171; --neg-bg:#2e1414;
   --warn:#fbbf24; --warn-bg:#2c2109;
+  --save:#2dd4bf; --save-bg:#08211f;
   --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.28);
 }
 *{box-sizing:border-box}
@@ -117,13 +120,15 @@ nav.tabs button.on{color:var(--accent)}
 .sec-h .spacer{flex:1}
 
 .kpis{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-@media(min-width:700px){.kpis{grid-template-columns:repeat(3,1fr)}}
+@media(min-width:700px){.kpis{grid-template-columns:repeat(4,1fr)}}
 .kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:13px 14px;box-shadow:var(--shadow)}
 .kpi .t{font-size:11.5px;color:var(--muted);font-weight:600;letter-spacing:.02em;display:flex;align-items:center;gap:5px}
 .kpi .v{font-size:21px;font-weight:700;letter-spacing:-.02em;margin-top:5px;font-variant-numeric:tabular-nums}
 .kpi .s{font-size:11.5px;color:var(--faint);margin-top:2px}
-.kpi.hero{grid-column:1/-1;background:var(--brand);border-color:var(--brand);color:var(--on-brand)}
-@media(min-width:700px){.kpi.hero{grid-column:span 2}}
+.kpi.hero{grid-column:span 2;background:var(--brand);border-color:var(--brand);color:var(--on-brand)}
+.kpi.fondo{grid-column:span 2;background:var(--save-bg);border-color:transparent}
+.kpi.fondo .v{color:var(--save)}
+.save{color:var(--save)}
 .kpi.hero .t{color:inherit;opacity:.72}
 .kpi.hero .v{font-size:30px}
 .kpi.hero .s{color:inherit;opacity:.6}
@@ -143,7 +148,9 @@ nav.tabs button.on{color:var(--accent)}
 .chip.ok{background:var(--pos-bg);color:var(--pos);border-color:transparent}
 .chip.due{background:var(--warn-bg);color:var(--warn);border-color:transparent}
 .chip.late{background:var(--neg-bg);color:var(--neg);border-color:transparent}
-.daysep{padding:7px 14px;font-size:11.5px;font-weight:700;color:var(--muted);background:var(--surface-2);border-bottom:1px solid var(--border);text-transform:capitalize;position:sticky;top:0}
+.chip.save{background:var(--save-bg);color:var(--save);border-color:transparent}
+.daysep{padding:7px 14px;font-size:11.5px;font-weight:700;color:var(--muted);background:var(--surface-2);border-bottom:1px solid var(--border);position:sticky;top:0}
+.daysep::first-letter{text-transform:uppercase}
 .empty{padding:34px 20px;text-align:center;color:var(--faint);font-size:13.5px}
 .empty svg{width:34px;height:34px;opacity:.4;margin-bottom:8px;stroke-width:1.5}
 
@@ -186,11 +193,12 @@ input[type=number]{font-variant-numeric:tabular-nums}
   font-size:13.5px;font-weight:650;color:var(--muted);
 }
 .seg button.on{background:var(--surface);color:var(--text);box-shadow:var(--shadow)}
-.seg button.on.income{color:var(--pos)} .seg button.on.expense{color:var(--neg)}
-.check{display:flex;align-items:flex-start;gap:9px;padding:11px;border:1px solid var(--border);border-radius:11px;background:var(--surface-2);cursor:pointer}
+.seg button.on.income{color:var(--pos)} .seg button.on.expense{color:var(--neg)} .seg button.on.save{color:var(--save)}
+label.check{display:flex;align-items:flex-start;gap:9px;padding:11px;margin-bottom:0;border:1px solid var(--border);border-radius:11px;background:var(--surface-2);cursor:pointer;font-size:15px;color:var(--text);font-weight:400}
 .check input{width:auto;margin:2px 0 0}
-.check .cl{font-size:13.5px;font-weight:600}
-.check .ch{font-size:11.5px;color:var(--muted)}
+.check span{min-width:0}
+.check .cl{display:block;font-size:13.5px;font-weight:600;line-height:1.35}
+.check .ch{display:block;font-size:11.5px;color:var(--muted);font-weight:400;line-height:1.35;margin-top:2px}
 
 /* ---------- modal ---------- */
 .ovl{position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:60;display:flex;align-items:flex-end;justify-content:center;backdrop-filter:blur(2px)}
@@ -272,7 +280,7 @@ table.tbl tr:last-child td{border-bottom:0}
    ========================================================================= */
 
 /* ------------------------------- estado -------------------------------- */
-const APP_VERSION = '1.4';
+const APP_VERSION = '1.5';
 const KEY = 'misfinanzas.v1';
 
 const CATS_DEF = [
@@ -285,6 +293,7 @@ const CATS_DEF = [
   {id:'salud',     n:'Salud',                     c:'#0d9488'},
   {id:'educacion', n:'Educación',                 c:'#7c3aed'},
   {id:'personal',  n:'Personal / Ocio',           c:'#c026d3'},
+  {id:'ahorro',    n:'Ahorro',                    c:'#0d9488'},
   {id:'otros',     n:'Otros',                     c:'#64748b'},
   {id:'sueldo',    n:'Sueldo',                    c:'#059669'},
   {id:'extra',     n:'Ingresos extra',            c:'#65a30d'}
@@ -293,7 +302,7 @@ const CATS_DEF = [
 function blankDB(){
   return {
     v:1,
-    config:{ saldoInicial:0, fechaSaldo:isoToday(), nombre:'' },
+    config:{ saldoInicial:0, fechaSaldo:isoToday(), ahorroInicial:0, nombre:'' },
     cats: CATS_DEF.map(c=>({...c})),
     movimientos:[], fijos:[], creditos:[], tarjetas:[], compras:[],
     overrides:{}
@@ -308,6 +317,8 @@ function load(){
     if(raw){ const p = JSON.parse(raw); db = Object.assign(blankDB(), p);
       db.config = Object.assign(blankDB().config, p.config||{}); }
   }catch(e){ console.warn('No se pudo leer el almacenamiento local:', e); }
+  // Datos guardados con versiones anteriores: agregar lo que falte.
+  if(!db.cats.some(c=>c.id==='ahorro')) db.cats.push({id:'ahorro', n:'Ahorro', c:'#0d9488'});
 }
 function save(){
   try{ localStorage.setItem(KEY, JSON.stringify(db)); }
@@ -472,13 +483,17 @@ function occsRange(ymA, ymB){
 // ¿Este movimiento ya está fuera del saldo de partida?
 const cuenta = o => o.fecha >= db.config.fechaSaldo;
 
+// Efecto sobre el dinero disponible:
+//   ingreso (+)  ·  gasto (−)  ·  ahorro (−, se aparta)  ·  retiro (+, vuelve)
+const efecto = o => (o.tipo === 'ingreso' || o.tipo === 'retiro') ? o.monto : -o.monto;
+
 // Saldo al cierre de la fecha indicada.
 function saldoAl(fechaISO){
   const base = db.config.fechaSaldo;
   let s = db.config.saldoInicial || 0;
   if(fechaISO < base) return s;
   occsRange(ymOf(base), ymOf(fechaISO)).forEach(o=>{
-    if(cuenta(o) && o.fecha <= fechaISO) s += (o.tipo==='ingreso' ? o.monto : -o.monto);
+    if(cuenta(o) && o.fecha <= fechaISO) s += efecto(o);
   });
   return s;
 }
@@ -490,10 +505,29 @@ function serieSaldo(desdeISO, hastaISO){
   const n = daysBetween(desdeISO, hastaISO);
   for(let i=0; i<=n; i++){
     const f = addDaysIso(desdeISO, i);
-    occ.forEach(o=>{ if(o.fecha === f) s += (o.tipo==='ingreso' ? o.monto : -o.monto); });
+    occ.forEach(o=>{ if(o.fecha === f) s += efecto(o); });
     pts.push({fecha:f, saldo:s});
   }
   return pts;
+}
+
+// Fondo de ahorro acumulado hasta la fecha indicada.
+function fondoAhorroAl(fechaISO){
+  return db.movimientos.reduce((s,m)=>{
+    if(m.fecha > fechaISO) return s;
+    if(m.tipo === 'ahorro') return s + m.monto;
+    if(m.tipo === 'retiro') return s - m.monto;
+    return s;
+  }, db.config.ahorroInicial || 0);
+}
+// Cuánto se apartó (neto) en un mes.
+function ahorroDelMes(ym){
+  return db.movimientos.reduce((s,m)=>{
+    if(ymOf(m.fecha) !== ym) return s;
+    if(m.tipo === 'ahorro') return s + m.monto;
+    if(m.tipo === 'retiro') return s - m.monto;
+    return s;
+  }, 0);
 }
 
 function resumenMes(ym){
@@ -573,11 +607,12 @@ function viewResumen(){
   // pendientes
   const vencidos = occ.filter(o=>o.tipo==='gasto' && o.estado!=='pagado' && o.fecha < hoy);
   const prox = occsRange(ymOf(hoy), ymOf(addDaysIso(hoy,10)))
-                .filter(o=>o.tipo==='gasto' && o.estado!=='pagado' && o.fecha >= hoy && o.fecha <= addDaysIso(hoy,10))
+                .filter(o=>(o.tipo==='gasto'||o.tipo==='ahorro') && o.estado!=='pagado' && o.fecha >= hoy && o.fecha <= addDaysIso(hoy,10))
                 .sort((a,b)=>a.fecha.localeCompare(b.fecha));
 
-  // comprometido: gastos del mes con fecha futura
-  const comprometido = occ.filter(o=>o.tipo==='gasto' && o.fecha > hoy).reduce((s,o)=>s+o.monto,0);
+  // comprometido: todo lo que sale de la caja después de hoy (gastos y ahorros programados)
+  const comprometido = occ.filter(o=>(o.tipo==='gasto'||o.tipo==='ahorro') && o.fecha > hoy)
+                          .reduce((s,o)=>s+o.monto,0);
 
   // serie del mes
   const d1 = ui.ym + '-01';
@@ -586,11 +621,19 @@ function viewResumen(){
 
   let h = '';
 
+  const fondo = fondoAhorroAl(hoy);
+  const ahoMes = ahorroDelMes(ui.ym);
+
   // KPIs
   h += '<div class="sec"><div class="kpis">';
   h += '<div class="kpi hero"><div class="t">Saldo disponible hoy · '+fmtFecha(hoy)+'</div>'+
        '<div class="v">'+money(saldoHoy)+'</div>'+
        '<div class="s">Ya descontado todo lo que vence hasta hoy</div></div>';
+  h += '<div class="kpi fondo"><div class="t">Ahorro acumulado</div>'+
+       '<div class="v">'+money(fondo)+'</div>'+
+       '<div class="s">'+(ahoMes>0 ? 'Apartaste '+money(ahoMes)+' en '+labelYm(ui.ym)
+                        : ahoMes<0 ? 'Retiraste '+money(-ahoMes)+' en '+labelYm(ui.ym)
+                        : 'Sin movimientos de ahorro en '+labelYm(ui.ym))+'</div></div>';
   h += '<div class="kpi"><div class="t">Comprometido del mes</div><div class="v neg">'+money(comprometido)+'</div>'+
        '<div class="s">Vence después de hoy</div></div>';
   h += '<div class="kpi"><div class="t">Proyectado a fin de mes</div><div class="v '+(saldoFin<0?'neg':'pos')+'">'+money(saldoFin)+'</div>'+
@@ -742,12 +785,16 @@ function rowOcc(o, hoy){
   else if(o.fecha < hoy) chip = '<span class="chip late">Vencido</span>';
   else if(o.fecha === hoy) chip = '<span class="chip due">Hoy</span>';
   else if(daysBetween(hoy,o.fecha) <= 5) chip = '<span class="chip due">En '+daysBetween(hoy,o.fecha)+'d</span>';
+  if(o.tipo==='ahorro') chip = '<span class="chip save">A ahorro</span>';
+  if(o.tipo==='retiro') chip = '<span class="chip save">Desde ahorro</span>';
   const org = o.origen ? '<span class="chip">'+o.origen+'</span>' : '';
+  const suma = (o.tipo==='ingreso' || o.tipo==='retiro');
+  const cls  = (o.tipo==='ahorro' || o.tipo==='retiro') ? 'save' : (suma ? 'pos' : '');
   return '<div class="row" data-occ="'+esc(o.id)+'">'+
     '<span class="dot" style="background:'+c.c+'"></span>'+
     '<div class="main"><div class="d1">'+esc(o.desc)+'</div>'+
     '<div class="d2"><span>'+fmtFecha(o.fecha)+'</span><span>·</span><span>'+esc(c.n)+'</span>'+org+chip+'</div></div>'+
-    '<div class="amt '+(o.tipo==='ingreso'?'pos':'')+'">'+(o.tipo==='ingreso'?'+':'−')+money(o.monto).replace('$','$')+'</div>'+
+    '<div class="amt '+cls+'">'+(suma?'+':'−')+money(o.monto)+'</div>'+
     '</div>';
 }
 
@@ -755,9 +802,12 @@ function viewMovimientos(){
   const hoy = isoToday();
   const {occ, ing, gas} = resumenMes(ui.ym);
   let h = '';
-  h += '<div class="sec"><div class="kpis" style="grid-template-columns:1fr 1fr">'+
+  const ahoMes = ahorroDelMes(ui.ym);
+  h += '<div class="sec"><div class="kpis" style="grid-template-columns:repeat(auto-fit,minmax(104px,1fr))">'+
     '<div class="kpi"><div class="t">Ingresos</div><div class="v pos">'+money(ing)+'</div></div>'+
     '<div class="kpi"><div class="t">Gastos</div><div class="v neg">'+money(gas)+'</div></div>'+
+    '<div class="kpi"><div class="t">'+(ahoMes<0?'Retiro de ahorro':'A ahorro')+'</div>'+
+      '<div class="v save">'+money(Math.abs(ahoMes))+'</div></div>'+
     '</div></div>';
 
   h += '<div class="sec"><div class="sec-h"><h2>Movimientos de '+labelYm(ui.ym)+'</h2><div class="spacer"></div>'+
@@ -916,6 +966,9 @@ function viewConfig(){
     '<input id="cfgFecha" type="date" value="'+db.config.fechaSaldo+'">'+
     '<div class="hint">Todo movimiento con <b>esta fecha o posterior</b> se aplica al saldo, incluido el mismo día. '+
     'Lo anterior a esta fecha se ignora, porque ya está dentro del saldo de partida.</div></div>'+
+    '<div class="field"><label>Ahorro que ya tenías acumulado</label>'+
+    '<input id="cfgAhorro" inputmode="numeric" value="'+NF.format(db.config.ahorroInicial||0)+'">'+
+    '<div class="hint">Va al fondo de ahorro y <b>no</b> se suma al saldo disponible: es dinero que ya tienes apartado.</div></div>'+
     '<button class="btn pri block" data-act="saveCfg">Guardar</button></div></div>';
 
   h += '<div class="sec"><div class="sec-h"><h2>Respaldo de datos</h2></div><div class="card pad">'+
@@ -986,10 +1039,18 @@ function ymOptions(sel){
 function modalMov(mov){
   const isNew = !mov;
   const m = mov || {tipo:'gasto', fecha:isoToday(), monto:0, desc:'', catId:'otros', estado:'pendiente', nota:''};
+  const esAhorro = t => t==='ahorro' || t==='retiro';
   openModal(isNew?'Nuevo movimiento':'Editar movimiento',
     '<div class="field"><div class="seg" id="segTipo">'+
       '<button data-t="gasto" class="expense '+(m.tipo==='gasto'?'on':'')+'">Gasto</button>'+
-      '<button data-t="ingreso" class="income '+(m.tipo==='ingreso'?'on':'')+'">Ingreso</button></div></div>'+
+      '<button data-t="ingreso" class="income '+(m.tipo==='ingreso'?'on':'')+'">Ingreso</button>'+
+      '<button data-t="ahorro" class="save '+(esAhorro(m.tipo)?'on':'')+'">Ahorro</button></div>'+
+      '<div class="seg" id="segAhorro" style="margin-top:8px'+(esAhorro(m.tipo)?'':';display:none')+'">'+
+        '<button data-a="ahorro" class="save '+(m.tipo!=='retiro'?'on':'')+'">Apartar</button>'+
+        '<button data-a="retiro" class="save '+(m.tipo==='retiro'?'on':'')+'">Retirar</button></div>'+
+      '<div class="hint" id="hintAhorro"'+(esAhorro(m.tipo)?'':' style="display:none"')+'>'+
+        'Apartar baja tu saldo disponible y suma al fondo de ahorro. Retirar hace lo contrario.</div>'+
+    '</div>'+
     '<div class="field"><label>Monto</label><input id="fMonto" inputmode="numeric" placeholder="0" value="'+(m.monto?NF.format(m.monto):'')+'"></div>'+
     '<div class="field"><label>Descripción</label><input id="fDesc" placeholder="Ej: Supermercado, Sueldo, Bencina" value="'+esc(m.desc)+'"></div>'+
     '<div class="grid2">'+
@@ -997,16 +1058,34 @@ function modalMov(mov){
       '<div class="field"><label>Categoría</label><select id="fCat">'+catOptions(m.catId)+'</select></div>'+
     '</div>'+
     '<div class="field"><label class="check"><input type="checkbox" id="fPagado" '+(m.estado==='pagado'?'checked':'')+'>'+
-      '<span><span class="cl">Ya está pagado / recibido</span><span class="ch">Solo para tu control. El saldo se afecta igual en la fecha indicada.</span></span></label></div>'+
+      '<span><span class="cl">Ya está hecho</span><span class="ch">Solo para tu control. El saldo se afecta igual en la fecha indicada.</span></span></label></div>'+
     '<div class="field"><label>Nota (opcional)</label><input id="fNota" value="'+esc(m.nota||'')+'"></div>',
     '<div class="modal-f">'+(isNew?'':'<button class="btn danger" id="bDel">Eliminar</button>')+
     '<button class="btn pri" id="bOk">Guardar</button></div>');
 
   let tipo = m.tipo;
-  $('#segTipo').querySelectorAll('button').forEach(b=>b.onclick=()=>{
+  const segT = $('#segTipo'), segA = $('#segAhorro'), hintA = $('#hintAhorro');
+  function pintarTipo(){
+    segT.querySelectorAll('button').forEach(b=>{
+      const activo = (b.dataset.t === 'ahorro') ? esAhorro(tipo) : (b.dataset.t === tipo);
+      b.classList.toggle('on', activo);
+    });
+    const mostrar = esAhorro(tipo);
+    segA.style.display = mostrar ? '' : 'none';
+    hintA.style.display = mostrar ? '' : 'none';
+    segA.querySelectorAll('button').forEach(b=> b.classList.toggle('on', b.dataset.a === tipo));
+    const fd = $('#fDesc');
+    if(fd) fd.placeholder = tipo==='ahorro' ? 'Ej: Ahorro del mes, Fondo de emergencia'
+                          : tipo==='retiro' ? 'Ej: Retiro para el dentista'
+                          : 'Ej: Supermercado, Sueldo, Bencina';
+  }
+  segT.querySelectorAll('button').forEach(b=>b.onclick=()=>{
     tipo = b.dataset.t;
-    $('#segTipo').querySelectorAll('button').forEach(x=>x.classList.toggle('on', x===b));
+    if(tipo === 'ahorro' && isNew) $('#fCat').value = 'ahorro';
+    pintarTipo();
   });
+  segA.querySelectorAll('button').forEach(b=>b.onclick=()=>{ tipo = b.dataset.a; pintarTipo(); });
+  pintarTipo();
   $('#bOk').onclick = ()=>{
     const monto = parseMoney($('#fMonto').value);
     const desc  = $('#fDesc').value.trim();
@@ -1273,14 +1352,20 @@ async function download(name, content, mime, okMsg){
   toast(okMsg||'Archivo descargado');
 }
 function csvOf(ymA, ymB){
-  const rows = [['Fecha','Tipo','Descripcion','Categoria','Origen','Estado','Ingreso','Gasto','Saldo acumulado']];
+  const rows = [['Fecha','Tipo','Descripcion','Categoria','Origen','Estado',
+                 'Entra','Sale','Saldo disponible','Fondo ahorro']];
   const occ = occsRange(ymA, ymB).filter(cuenta).sort((a,b)=>a.fecha.localeCompare(b.fecha));
+  const NOMBRE = {ingreso:'Ingreso', gasto:'Gasto', ahorro:'Ahorro (aporte)', retiro:'Ahorro (retiro)'};
   let s = saldoAl(addDaysIso(ymA+'-01',-1));
+  let f = fondoAhorroAl(addDaysIso(ymA+'-01',-1));
   occ.forEach(o=>{
-    s += (o.tipo==='ingreso'? o.monto : -o.monto);
-    rows.push([ o.fecha, o.tipo==='ingreso'?'Ingreso':'Gasto', o.desc, catById(o.catId).n,
-      o.origen||'Manual', o.estado==='pagado'?'Pagado':'Pendiente',
-      o.tipo==='ingreso'?o.monto:'', o.tipo==='gasto'?o.monto:'', s ]);
+    s += efecto(o);
+    if(o.tipo==='ahorro') f += o.monto;
+    if(o.tipo==='retiro') f -= o.monto;
+    const entra = (o.tipo==='ingreso' || o.tipo==='retiro') ? o.monto : '';
+    const sale  = (o.tipo==='gasto'   || o.tipo==='ahorro') ? o.monto : '';
+    rows.push([ o.fecha, NOMBRE[o.tipo] || o.tipo, o.desc, catById(o.catId).n,
+      o.origen||'Manual', o.estado==='pagado'?'Pagado':'Pendiente', entra, sale, s, f ]);
   });
   return '﻿' + rows.map(r=>r.map(v=>{
     const t = String(v==null?'':v);
@@ -1317,6 +1402,7 @@ function wire(){
     if(a==='saveCfg'){
       db.config.saldoInicial = parseMoney($('#cfgSaldo').value);
       db.config.fechaSaldo = $('#cfgFecha').value || isoToday();
+      db.config.ahorroInicial = parseMoney($('#cfgAhorro').value);
       save(); render(); toast('Punto de partida guardado');
     }
     if(a==='expCsv'){ download('finanzas-'+ui.ym+'.csv', csvOf(ui.ym, ui.ym), 'text/csv;charset=utf-8'); }
@@ -1350,8 +1436,10 @@ function wire(){
     rd.readAsText(f);
   };
 
-  const cs = $('#cfgSaldo');
-  if(cs) cs.addEventListener('input', ()=>{ cs.value = fmtMoneyInput(cs.value); });
+  ['#cfgSaldo','#cfgAhorro'].forEach(sel=>{
+    const c = $(sel);
+    if(c) c.addEventListener('input', ()=>{ c.value = fmtMoneyInput(c.value); });
+  });
 }
 
 /* ------------------------------- arranque ------------------------------ */
