@@ -349,7 +349,7 @@ function fmtFechaLarga(iso){
   return DIAS[dt.getDay()] + ' ' + d + ' de ' + MESES[m-1];
 }
 
-/* -------------------------------- plata -------------------------------- */
+/* ------------------------------- montos -------------------------------- */
 const NF = new Intl.NumberFormat('es-CL', {maximumFractionDigits:0});
 function money(n){ const v = Math.round(n||0); return (v<0?'-$':'$') + NF.format(Math.abs(v)); }
 function moneyShort(n){
@@ -590,7 +590,7 @@ function viewResumen(){
   }
   if(minPt && minPt.saldo < 0){
     h += '<div class="sec"><div class="note">'+svg(ICON.alerta)+
-      '<div><b>Ojo: el saldo se pone negativo</b><br>El punto más bajo del mes es '+money(minPt.saldo)+
+      '<div><b>Atención: el saldo queda negativo</b><br>El punto más bajo del mes es '+money(minPt.saldo)+
       ' el '+fmtFechaLarga(minPt.fecha)+'.</div></div></div>';
   }
 
@@ -608,7 +608,7 @@ function viewResumen(){
   const porCat = {};
   occ.filter(o=>o.tipo==='gasto').forEach(o=>{ porCat[o.catId] = (porCat[o.catId]||0) + o.monto; });
   const cats = Object.entries(porCat).map(([id,v])=>({cat:catById(id), v})).sort((a,b)=>b.v-a.v);
-  h += '<div class="sec"><div class="sec-h"><h2>En qué se va la plata · '+labelYm(ui.ym)+'</h2></div><div class="card pad">';
+  h += '<div class="sec"><div class="sec-h"><h2>En qué se va el dinero · '+labelYm(ui.ym)+'</h2></div><div class="card pad">';
   if(!cats.length) h += '<div class="empty">'+svg(ICON.vacio)+'<div>Aún no hay gastos este mes</div></div>';
   else h += donut(cats, gas);
   h += '</div></div>';
@@ -743,7 +743,7 @@ function viewMovimientos(){
   h += '<div class="sec"><div class="sec-h"><h2>Movimientos de '+labelYm(ui.ym)+'</h2><div class="spacer"></div>'+
        '<button class="btn sm" data-act="addMov">'+svg(ICON.plus)+'Agregar</button></div><div class="card list">';
   if(!occ.length){
-    h += '<div class="empty">'+svg(ICON.vacio)+'<div>Sin movimientos este mes.<br>Tocá <b>+</b> para agregar el primero.</div></div>';
+    h += '<div class="empty">'+svg(ICON.vacio)+'<div>Sin movimientos este mes.<br>Usa el botón <b>+</b> para agregar el primero.</div></div>';
   } else {
     let last = '';
     occ.forEach(o=>{
@@ -761,12 +761,12 @@ function viewMovimientos(){
 /* ---------------------------- VISTA: FIJOS ----------------------------- */
 function viewFijos(){
   let h = '<div class="sec"><div class="note" style="background:var(--surface);color:var(--muted);border:1px solid var(--border)">'+
-    svg(ICON.fijos)+'<div>Los gastos fijos se repiten <b>todos los meses</b> en el día que indiques. No hay que volver a cargarlos. Si un mes viene distinto (por ejemplo los gastos comunes), tocá ese movimiento y ajustás solo ese mes.</div></div></div>';
+    svg(ICON.fijos)+'<div>Los gastos fijos se repiten <b>todos los meses</b> en el día que indiques. No hay que volver a registrarlos. Si un mes viene distinto (por ejemplo los gastos comunes), selecciona ese movimiento y ajustas solo ese mes.</div></div></div>';
 
   h += '<div class="sec"><div class="sec-h"><h2>Gastos e ingresos fijos</h2><div class="spacer"></div>'+
        '<button class="btn sm" data-act="addFijo">'+svg(ICON.plus)+'Nuevo fijo</button></div><div class="card list">';
   if(!db.fijos.length){
-    h += '<div class="empty">'+svg(ICON.vacio)+'<div>Sin gastos fijos cargados.<br>Ej: gastos comunes, luz, agua, internet, sueldo.</div></div>';
+    h += '<div class="empty">'+svg(ICON.vacio)+'<div>Sin gastos fijos registrados.<br>Ej: gastos comunes, luz, agua, internet, sueldo.</div></div>';
   } else {
     h += db.fijos.map(f=>{
       const c = catById(f.catId);
@@ -796,7 +796,7 @@ function viewCreditos(){
 
   if(!db.creditos.length){
     h += '<div class="card"><div class="empty">'+svg(ICON.vacio)+
-      '<div>Sin créditos cargados.<br>Cargá el monto de la cuota, cuántas son y el día de pago:<br>las cuotas se generan solas mes a mes.</div></div></div>';
+      '<div>Sin créditos registrados.<br>Registra el monto de la cuota, cuántas son y el día de pago:<br>las cuotas se generan solas mes a mes.</div></div></div>';
   } else {
     h += db.creditos.map(c=>{
       const cat = catById(c.catId);
@@ -835,12 +835,12 @@ function viewCreditos(){
 /* --------------------------- VISTA: TARJETAS --------------------------- */
 function viewTarjetas(){
   let h = '<div class="sec"><div class="note" style="background:var(--surface);color:var(--muted);border:1px solid var(--border)">'+
-    svg(ICON.tarjetas)+'<div>Cargá cada compra en cuotas una sola vez. La app suma automáticamente las cuotas que caen en cada mes y las muestra como <b>un solo cargo</b> en la fecha de pago de la tarjeta.</div></div></div>';
+    svg(ICON.tarjetas)+'<div>Registra cada compra en cuotas una sola vez. La app suma automáticamente las cuotas que caen en cada mes y las muestra como <b>un solo cargo</b> en la fecha de pago de la tarjeta.</div></div></div>';
 
   h += '<div class="sec"><div class="sec-h"><h2>Tarjetas</h2><div class="spacer"></div>'+
        '<button class="btn sm" data-act="addTarjeta">'+svg(ICON.plus)+'Nueva tarjeta</button></div>';
   if(!db.tarjetas.length){
-    h += '<div class="card"><div class="empty">'+svg(ICON.vacio)+'<div>Sin tarjetas cargadas.</div></div></div>';
+    h += '<div class="card"><div class="empty">'+svg(ICON.vacio)+'<div>Sin tarjetas registradas.</div></div></div>';
     return h + '</div>';
   }
   db.tarjetas.forEach(t=>{
@@ -870,7 +870,7 @@ function viewTarjetas(){
 
   const compras = db.compras.slice().sort((a,b)=>b.primerMes.localeCompare(a.primerMes));
   if(compras.length){
-    h += '<div class="sec"><div class="sec-h"><h2>Todas las compras cargadas</h2></div><div class="card list">'+
+    h += '<div class="sec"><div class="sec-h"><h2>Todas las compras registradas</h2></div><div class="card list">'+
       compras.map(c=>{
         const t = db.tarjetas.find(x=>x.id===c.tarjetaId);
         const rest = Math.max(0, c.cuotas - Math.max(0, monthDiff(c.primerMes, ymOf(isoToday()))));
@@ -891,14 +891,14 @@ function viewConfig(){
   h += '<div class="sec"><div class="sec-h"><h2>Punto de partida</h2></div><div class="card pad">'+
     '<div class="field"><label>Saldo que tengo hoy en cuentas + efectivo</label>'+
     '<input id="cfgSaldo" inputmode="numeric" value="'+NF.format(db.config.saldoInicial||0)+'">'+
-    '<div class="hint">De acá parte todo el cálculo. Es la foto real de tu plata a la fecha de abajo.</div></div>'+
+    '<div class="hint">Desde aquí parte todo el cálculo. Es la foto real de tu dinero a la fecha indicada abajo.</div></div>'+
     '<div class="field"><label>Fecha de esa foto</label>'+
     '<input id="cfgFecha" type="date" value="'+db.config.fechaSaldo+'">'+
     '<div class="hint">Los movimientos anteriores a esta fecha no se suman (ya están dentro del saldo).</div></div>'+
     '<button class="btn pri block" data-act="saveCfg">Guardar</button></div></div>';
 
   h += '<div class="sec"><div class="sec-h"><h2>Respaldo de datos</h2></div><div class="card pad">'+
-    '<div class="hint" style="margin-bottom:12px">Tus datos viven solo en este dispositivo. Bajá el respaldo cada tanto y guardalo en OneDrive: con ese archivo restaurás todo en cualquier equipo o celular.</div>'+
+    '<div class="hint" style="margin-bottom:12px">Tus datos se guardan solo en este dispositivo. Descarga el respaldo cada cierto tiempo y guárdalo en OneDrive: con ese archivo restauras todo en cualquier equipo o celular.</div>'+
     '<div class="tools">'+
     '<button class="btn" data-act="backup">'+svg(ICON.down)+'Descargar respaldo</button>'+
     '<button class="btn" data-act="restore">'+svg(ICON.up)+'Restaurar respaldo</button>'+
@@ -978,8 +978,8 @@ function modalMov(mov){
   $('#bOk').onclick = ()=>{
     const monto = parseMoney($('#fMonto').value);
     const desc  = $('#fDesc').value.trim();
-    if(monto<=0) return toast('Poné un monto mayor a cero');
-    if(!desc)    return toast('Poné una descripción');
+    if(monto<=0) return toast('Ingresa un monto mayor a cero');
+    if(!desc)    return toast('Ingresa una descripción');
     const data = { tipo, fecha:$('#fFecha').value, monto, desc, catId:$('#fCat').value,
       estado: $('#fPagado').checked?'pagado':'pendiente', nota:$('#fNota').value.trim() };
     if(isNew) db.movimientos.push(Object.assign({id:uid()}, data));
@@ -1000,14 +1000,14 @@ function modalOcc(o){
       o.detalle.map(i=>'<tr><td>'+esc(i.desc)+'</td><td>'+i.n+'/'+i.total+'</td><td class="num">'+money(i.montoCuota)+'</td></tr>').join('')+'</tbody></table>'
     : '';
   openModal(o.desc,
-    '<div class="hint" style="margin-bottom:13px">Este movimiento se genera solo, porque es un <b>'+origen+'</b>. Lo que cambies acá aplica <b>únicamente a '+labelYm(ymOf(o.fecha))+'</b>.</div>'+
+    '<div class="hint" style="margin-bottom:13px">Este movimiento se genera solo, porque es un <b>'+origen+'</b>. Lo que cambies aquí aplica <b>únicamente a '+labelYm(ymOf(o.fecha))+'</b>.</div>'+
     det+
     '<div class="grid2">'+
       '<div class="field"><label>Monto este mes</label><input id="fMonto" inputmode="numeric" value="'+NF.format(o.monto)+'"></div>'+
       '<div class="field"><label>Fecha este mes</label><input id="fFecha" type="date" value="'+o.fecha+'"></div>'+
     '</div>'+
     '<div class="field"><label class="check"><input type="checkbox" id="fPagado" '+(o.estado==='pagado'?'checked':'')+'>'+
-      '<span><span class="cl">Ya está pagado</span><span class="ch">Marcá para saber qué te falta pagar del mes.</span></span></label></div>',
+      '<span><span class="cl">Ya está pagado</span><span class="ch">Marca la casilla para saber qué te falta pagar del mes.</span></span></label></div>',
     '<div class="modal-f">'+
     '<button class="btn" id="bSkip">Omitir este mes</button>'+
     '<button class="btn pri" id="bOk">Guardar</button></div>'+
@@ -1048,7 +1048,7 @@ function modalFijo(fijo){
       '<div class="field"><label>Hasta (opcional)</label><select id="fHasta"><option value="">Sin fecha de término</option>'+ymOptions(f.hasta)+'</select></div>'+
     '</div>'+
     '<div class="field"><label class="check"><input type="checkbox" id="fAct" '+(f.activo!==false?'checked':'')+'>'+
-      '<span><span class="cl">Activo</span><span class="ch">Destildá para pausarlo sin borrar el historial.</span></span></label></div>',
+      '<span><span class="cl">Activo</span><span class="ch">Desmarca la casilla para pausarlo sin borrar el historial.</span></span></label></div>',
     '<div class="modal-f">'+(isNew?'':'<button class="btn danger" id="bDel">Eliminar</button>')+
     '<button class="btn pri" id="bOk">Guardar</button></div>');
 
@@ -1058,8 +1058,8 @@ function modalFijo(fijo){
   });
   $('#bOk').onclick = ()=>{
     const monto = parseMoney($('#fMonto').value), desc = $('#fDesc').value.trim();
-    if(!desc)   return toast('Poné una descripción');
-    if(monto<=0) return toast('Poné un monto mayor a cero');
+    if(!desc)   return toast('Ingresa una descripción');
+    if(monto<=0) return toast('Ingresa un monto mayor a cero');
     const data = { tipo, desc, monto, diaMes:parseInt($('#fDia').value,10), catId:$('#fCat').value,
       desde:$('#fDesde').value, hasta:$('#fHasta').value||'', activo:$('#fAct').checked };
     if(isNew) db.fijos.push(Object.assign({id:uid()}, data)); else Object.assign(fijo, data);
@@ -1096,7 +1096,7 @@ function modalCredito(cred){
     const fin = addMonths($('#fPrimer').value, Math.max(0,n-1));
     $('#prev').innerHTML = n>0 && cu>0
       ? 'Total del crédito: <b>'+money(cu*n)+'</b> · última cuota en <b>'+labelYm(fin)+'</b>'
-      : 'Completá cuota y número de cuotas.';
+      : 'Completa la cuota y el número de cuotas.';
   };
   ['#fCuota','#fN','#fPrimer'].forEach(s=>$(s).addEventListener('input', upd));
   $('#fPrimer').addEventListener('change', upd); upd();
@@ -1104,9 +1104,9 @@ function modalCredito(cred){
   $('#bOk').onclick = ()=>{
     const nombre = $('#fNom').value.trim(), montoCuota = parseMoney($('#fCuota').value);
     const cuotas = parseInt($('#fN').value,10)||0;
-    if(!nombre) return toast('Poné un nombre');
-    if(montoCuota<=0) return toast('Poné el valor de la cuota');
-    if(cuotas<1) return toast('Poné cuántas cuotas son');
+    if(!nombre) return toast('Ingresa un nombre');
+    if(montoCuota<=0) return toast('Ingresa el valor de la cuota');
+    if(cuotas<1) return toast('Indica cuántas cuotas son');
     const data = { nombre, montoCuota, cuotas, primerMes:$('#fPrimer').value,
       diaPago:parseInt($('#fDia').value,10), catId:$('#fCat').value, activo:true };
     if(isNew) db.creditos.push(Object.assign({id:uid()}, data)); else Object.assign(cred, data);
@@ -1133,7 +1133,7 @@ function modalTarjeta(tar){
     '<button class="btn pri" id="bOk">Guardar</button></div>');
   $('#bOk').onclick = ()=>{
     const nombre = $('#fNom').value.trim();
-    if(!nombre) return toast('Poné un nombre');
+    if(!nombre) return toast('Ingresa un nombre');
     const data = {nombre, diaPago:parseInt($('#fDia').value,10), catId:$('#fCat').value};
     if(isNew) db.tarjetas.push(Object.assign({id:uid()}, data)); else Object.assign(tar, data);
     closeModal(); render(); toast('Tarjeta guardada');
@@ -1170,7 +1170,7 @@ function modalCompra(compra, tarjetaId){
     const tot = parseMoney($('#fTot').value), n = parseInt($('#fN').value,10)||0;
     $('#prev').innerHTML = tot>0 && n>0
       ? 'Cuota mensual: <b>'+money(Math.round(tot/n))+'</b> · última en <b>'+labelYm(addMonths($('#fPrimer').value, n-1))+'</b>'
-      : 'Completá monto y cuotas.';
+      : 'Completa el monto y las cuotas.';
   };
   ['#fTot','#fN'].forEach(s=>$(s).addEventListener('input', upd));
   $('#fPrimer').addEventListener('change', upd); upd();
@@ -1178,9 +1178,9 @@ function modalCompra(compra, tarjetaId){
   $('#bOk').onclick = ()=>{
     const desc = $('#fDesc').value.trim(), montoTotal = parseMoney($('#fTot').value);
     const cuotas = parseInt($('#fN').value,10)||0;
-    if(!desc) return toast('Poné una descripción');
-    if(montoTotal<=0) return toast('Poné el monto total');
-    if(cuotas<1) return toast('Poné cuántas cuotas son');
+    if(!desc) return toast('Ingresa una descripción');
+    if(montoTotal<=0) return toast('Ingresa el monto total');
+    if(cuotas<1) return toast('Indica cuántas cuotas son');
     const data = { tarjetaId:$('#fTar').value, desc, montoTotal, cuotas,
       primerMes:$('#fPrimer').value, catId:$('#fCat').value };
     if(isNew) db.compras.push(Object.assign({id:uid()}, data)); else Object.assign(compra, data);
@@ -1202,7 +1202,7 @@ function modalCat(cat){
     '<div class="modal-f">'+(isNew?'':'<button class="btn danger" id="bDel">Eliminar</button>')+
     '<button class="btn pri" id="bOk">Guardar</button></div>');
   $('#bOk').onclick = ()=>{
-    const n = $('#fN').value.trim(); if(!n) return toast('Poné un nombre');
+    const n = $('#fN').value.trim(); if(!n) return toast('Ingresa un nombre');
     if(isNew) db.cats.push({id:uid(), n, c:$('#fC').value});
     else { cat.n = n; cat.c = $('#fC').value; }
     closeModal(); render(); toast('Categoría guardada');
@@ -1295,7 +1295,7 @@ function wire(){
     if(a==='backup'){ download('respaldo-finanzas-'+isoToday()+'.json', JSON.stringify(db,null,2), 'application/json', 'Respaldo guardado'); }
     if(a==='restore'){ $('#fileIn').click(); }
     if(a==='wipe'){
-      if(!confirm('Esto borra TODO lo cargado en este dispositivo. ¿Seguro?')) return;
+      if(!confirm('Esto borra TODO lo registrado en este dispositivo. ¿Seguro?')) return;
       if(!confirm('Última confirmación: se pierden movimientos, fijos, créditos y tarjetas.')) return;
       db = blankDB(); save(); render(); toast('Datos borrados');
     }
@@ -1341,13 +1341,13 @@ if(!db.config.saldoInicial && !db.movimientos.length && !db.fijos.length){
   setTimeout(()=>{
     openModal('Bienvenido',
       '<div class="hint" style="font-size:13.5px;line-height:1.55;margin-bottom:14px">'+
-      'Para que el saldo tenga sentido, arranquemos por la foto real de tu plata hoy.<br><br>'+
+      'Para que el saldo tenga sentido, empecemos por la foto real de tu dinero hoy.<br><br>'+
       '<b>Cómo funciona esta app:</b><br>'+
       '· El <b>saldo disponible hoy</b> descuenta solo lo que ya venció.<br>'+
       '· Un gasto con fecha 15 aparece en la lista, pero <b>no toca tu saldo hasta el 15</b>.<br>'+
-      '· Los <b>fijos, créditos y tarjetas</b> se cargan una vez y se repiten solos.'+
+      '· Los <b>fijos, créditos y tarjetas</b> se registran una vez y se repiten solos.'+
       '</div>'+
-      '<div class="field"><label>¿Cuánta plata tenés hoy? (cuentas + efectivo)</label>'+
+      '<div class="field"><label>¿Cuánto dinero tienes hoy? (cuentas + efectivo)</label>'+
       '<input id="wSaldo" inputmode="numeric" placeholder="0"></div>',
       '<div class="modal-f"><button class="btn pri" id="wOk">Empezar</button></div>');
     $('#wOk').onclick = ()=>{
